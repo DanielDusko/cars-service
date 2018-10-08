@@ -1,62 +1,11 @@
 <cs-header>
-  <p levels>cars</p>
+  <p levels>cars / {{ car?.model }}</p>
   <div content>
-    <p>List of cars in service</p>
+    <p>Car details</p>
   </div>
 </cs-header>
-<div class="container">
-  <div class="row">
-    <div class="col-sm-20">
-      <table *ngIf="cars && cars.length > 0; else noCarsInfo" class="cs-table table-striped table">
-        <thead>
-          <tr>
-            <th>car</th>
-            <th>plate</th>
-            <th>delivery date</th>
-            <th>deadline</th>
-            <th>client</th>
-            <th>cost</th>
-            <th>action</th>
-          </tr>
-        </thead>
-        <tbody>
-        <!--[routerLink]="['/cars', car.id]"-->
-          <tr *ngFor="let car of cars; let i = index" class="row-car" (click)="goToCarDetails(car)">
-            <td [ngClass]="{'row-error-left': car?.isFullyDamaged}">{{ car?.model }}</td>
-            <td [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.plate }}</td>
-            <td [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.deliveryDate }}</td>
-            <td [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.deadline }}</td>
-            <td [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.clientFirstName }} {{ car?.clientSurname }}</td>
-            <td [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.cost }}</td>
-            <td [ngClass]="{'row-error-right': car?.isFullyDamaged}">ACTION PLACEHOLDER</td>
-          </tr>
-        </tbody>
-      </table>
-      <ng-template #noCarsInfo *ngIf="cars">
-        <div class="no-cars-info">
-          <p>Currently no cars in service</p>
-        </div>
-      </ng-template>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-sm-12">
-      <button (click)="showGross()" class="btn btn-primary btn-sm float-right">
-        SHOW GROSS
-      </button>
-    </div>
-  </div>
-  <cs-total-cost #totalCostRef [totalCost] = "totalCost" (shownGross)="onShownGross($event)"></cs-total-cost>
-  <div class="row" *ngIf="grossCost">
-    <div class="col-sm-12">
-      <div class="total-cost">
-        <p class="text-right">TOTAL GROSS COST: {{ grossCost }} PLN</p>
-      </div>
-    </div>
-  </div>
-</div>
 
-<p class="data-header">Add a new car</p>
+<p class="data-header">Edit {{ car.model }}</p>
 
 <div class="data-container">
   <form [formGroup]="carForm">
@@ -127,7 +76,7 @@
 
     <div class="row">
       <div class="col-sm-12">
-        <button type="submit" [disabled]="carForm.invalid" (click)="addCar()" class="btn btn-primary float-right">Add car</button>
+        <button type="submit" [disabled]="carForm.invalid" (click)="updateCar()" class="btn btn-primary float-right">Update car</button>
         <button type="submit" (click)="carForm.reset()" class="btn btn-default float-right">Reset</button>
       </div>
     </div>

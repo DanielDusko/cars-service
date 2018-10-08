@@ -7,8 +7,20 @@
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
-      "prefix": "app",
-      "schematics": {},
+      "prefix": "cs",
+      "schematics": {
+        "@schematics/angular": {
+          "component": {
+            "spec": false
+          },
+          "service": {
+            "spec": false
+          },
+          "module": {
+            "spec": false
+          }
+        }
+      },
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
@@ -23,7 +35,8 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "node_modules/bootstrap/dist/css/bootstrap.css",
+              "src/styles.less"
             ],
             "scripts": []
           },
@@ -50,7 +63,8 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "cars-service:build"
+            "browserTarget": "cars-service:build",
+            "port": 4201
           },
           "configurations": {
             "production": {
@@ -72,7 +86,7 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
-              "src/styles.css"
+              "src/styles.less"
             ],
             "scripts": [],
             "assets": [
