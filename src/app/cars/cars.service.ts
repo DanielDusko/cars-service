@@ -12,18 +12,23 @@ export class CarsService {
   constructor(private http: HttpClient) { }
   // Observable strumień danych
   getCars(): Observable<Car[]> {
-    return this.http.get(this.apiUrl)
-      .pipe(map(res => res as Car[]));
+    return this.http.get<Car[]>(this.apiUrl);
+      //.pipe(map(res => res as Car[]));
   }
 
-  getCar(id: number): Observable<Car> {
-    return this.http.get(this.apiUrl + `/${id}`)
+  removeCar(id: number): Observable<Car> {
+    return this.http.delete(this.apiUrl + `/${id}`)
       .pipe(map(res => res as Car));
   }
 
+  getCar(id: number): Observable<Car> {
+    return this.http.get<Car>(this.apiUrl + `/${id}`);
+       // .pipe(map(res => res as Car));
+  }
+
   addCar(data): Observable<any> {
-    return this.http.post(this.apiUrl, data)
-      .pipe(map(res => res as Car[]));
+    return this.http.post(this.apiUrl, data);
+      // .pipe(map(res => res as Car[]));
   }
 
   updateCar(id: number, data): Observable<Car> {

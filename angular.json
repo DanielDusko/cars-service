@@ -18,6 +18,12 @@
           },
           "module": {
             "spec": false
+          },
+          "pipe": {
+            "spec": false
+          },
+          "directive": {
+            "spec": false
           }
         }
       },

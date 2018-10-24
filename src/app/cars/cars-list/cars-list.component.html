@@ -6,7 +6,7 @@
 </cs-header>
 <div class="container">
   <div class="row">
-    <div class="col-sm-20">
+    <div class="col-sm-12">
       <table *ngIf="cars && cars.length > 0; else noCarsInfo" class="cs-table table-striped table">
         <thead>
           <tr>
@@ -22,21 +22,24 @@
         <tbody>
         <!--[routerLink]="['/cars', car.id]"-->
           <tr *ngFor="let car of cars; let i = index" class="row-car" (click)="goToCarDetails(car)">
-            <td [ngClass]="{'row-error-left': car?.isFullyDamaged}">{{ car?.model }}</td>
+            <td csImportant [ngClass]="{'row-error-left': car?.isFullyDamaged}">{{ car?.model | uppercase }}</td>
             <td [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.plate }}</td>
-            <td [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.deliveryDate }}</td>
-            <td [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.deadline }}</td>
-            <td [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.clientFirstName }} {{ car?.clientSurname }}</td>
-            <td [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.cost }}</td>
-            <td [ngClass]="{'row-error-right': car?.isFullyDamaged}">ACTION PLACEHOLDER</td>
+            <td [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.deliveryDate | date:'shortDate' }}</td>
+            <td [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.deadline | date:'shortDate' }}</td>
+            <td [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.clientFirstName }} {{ car?.clientSurname | surnameShortcut }}</td>
+            <td csImportant [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.cost | currency:'PLN':true }}</td>
+            <td (click)="removeCar(car, $event)" [ngClass]="{'row-error-right': car?.isFullyDamaged}">( X )</td>
           </tr>
         </tbody>
       </table>
-      <ng-template #noCarsInfo *ngIf="cars">
-        <div class="no-cars-info">
-          <p>Currently no cars in service</p>
-        </div>
-      </ng-template>
+      <div *ngIf="cars.length == 0" class="no-cars-info">
+        <p>Currently no cars in service</p>
+      </div>
+      <!--<ng-template #noCarsInfo *ngIf="cars && cars.length === 0">-->
+        <!--<div class="no-cars-info">-->
+          <!--<p>Currently no cars in service</p>-->
+        <!--</div>-->
+      <!--</ng-template>-->
     </div>
   </div>
   <div class="row">

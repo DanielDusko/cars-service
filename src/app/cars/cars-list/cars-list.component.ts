@@ -4,6 +4,7 @@ import {TotalCostComponent} from '../total-cost/total-cost.component';
 import {CarsService} from '../cars.service';
 import {Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {el} from '@angular/platform-browser/testing/src/browser_util';
 
 @Component({
   selector: 'cars-list',
@@ -15,6 +16,7 @@ export class CarsListComponent implements OnInit, AfterViewInit {
   @ViewChild("totalCostRef") totalCostRef: TotalCostComponent;
   totalCost: number;
   grossCost: number;
+  noCarsInfo;
 
   cars: Car[];
 
@@ -51,6 +53,13 @@ export class CarsListComponent implements OnInit, AfterViewInit {
     // this.totalCostRef.showGross();
   }
 
+  removeCar(car: Car, event) {
+    event.stopPropagation();
+    this.carsService.removeCar(car.id).subscribe(() => {
+      this.loadCars();
+    });
+  }
+
   addCar() {
     this.carsService.addCar(this.carForm.value).subscribe(() => {
       this.loadCars();
@@ -69,9 +78,13 @@ export class CarsListComponent implements OnInit, AfterViewInit {
   }
 
   countTotalCost(): void {
-    this.totalCost = this.cars
-      .map((car) => car.cost)
-      .reduce((prev, next) => prev + next);
+    if (this.cars.length === 0) {
+      this.totalCost = 0;
+    } else {
+      this.totalCost = this.cars
+        .map((car) => car.cost)
+        .reduce((prev, next) => prev + next);
+    }
   }
 
   onShownGross(grossCost: number): void {
