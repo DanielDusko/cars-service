@@ -15,7 +15,7 @@ const APP_ROUTES: Route[] = [
 // pathMatch mówi jak musi zgadzać się nasza ścieżka w pełni
 // full oznacza że musi sie zgadzać z path
 @NgModule({
-  imports: [RouterModule.forRoot(APP_ROUTES)],
+  imports: [RouterModule.forRoot(APP_ROUTES, {useHash: true})],
   exports: [RouterModule]
 })
 

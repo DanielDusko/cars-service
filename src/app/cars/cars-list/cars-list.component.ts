@@ -1,10 +1,12 @@
-import {AfterViewInit, Component, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {AfterViewInit, Component, OnInit, QueryList, ViewChild, ViewChildren, ViewEncapsulation} from '@angular/core';
 import {Car} from '../models/car';
 import {TotalCostComponent} from '../total-cost/total-cost.component';
 import {CarsService} from '../cars.service';
 import {Router} from '@angular/router';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {el} from '@angular/platform-browser/testing/src/browser_util';
+import {CostSharedService} from '../cost-shared.service';
+import {CarTableRowComponent} from '../car-table-row/car-table-row.component';
 
 @Component({
   selector: 'cars-list',
@@ -14,6 +16,7 @@ import {el} from '@angular/platform-browser/testing/src/browser_util';
 })
 export class CarsListComponent implements OnInit, AfterViewInit {
   @ViewChild("totalCostRef") totalCostRef: TotalCostComponent;
+  @ViewChildren(CarTableRowComponent) carRows: QueryList<CarTableRowComponent>;
   totalCost: number;
   grossCost: number;
   noCarsInfo;
@@ -24,6 +27,7 @@ export class CarsListComponent implements OnInit, AfterViewInit {
 
   constructor(private carsService: CarsService,
               private formBuilder: FormBuilder,
+              private costSharedService: CostSharedService,
               private router: Router) { }
 
   ngOnInit() {
@@ -47,14 +51,18 @@ export class CarsListComponent implements OnInit, AfterViewInit {
       year: ''
     });
   }
-
+  //dostęp do zagnieżdżonych komponentów
   ngAfterViewInit() {
     // wszystko jest po utworzeniu już componentów
     // this.totalCostRef.showGross();
+    this.carRows.changes.subscribe(() => {
+      if (this.carRows.first.car.clientSurname === 'Kowalski') {
+        console.warn('Client Kowalski is next in queue, better go to holidays');
+      }
+    })
   }
 
-  removeCar(car: Car, event) {
-    event.stopPropagation();
+  onRemovedCar(car: Car) {
     this.carsService.removeCar(car.id).subscribe(() => {
       this.loadCars();
     });
@@ -70,6 +78,7 @@ export class CarsListComponent implements OnInit, AfterViewInit {
     this.carsService.getCars().subscribe((cars) => {
       this.cars = cars;
       this.countTotalCost();
+      this.costSharedService.sharedCost(this.totalCost);
     });
   }
 
