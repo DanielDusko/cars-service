@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 
 @Component({
   selector: 'cs-total-cost',
@@ -6,10 +6,16 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
   styleUrls: ['./total-cost.component.less'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TotalCostComponent {
+export class TotalCostComponent implements OnChanges {
   @Input() totalCost: number;
   @Output() shownGross: EventEmitter<number> = new EventEmitter<number>();
   private VAT: number = 1.23;
+  costTreshold: number = 10000;
+  isCostToLow: boolean = false;
+
+  ngOnChanges(changes: SimpleChanges) {
+    this.isCostToLow = changes['totalCost'].currentValue < this.costTreshold;
+  }
 
   showGross(): void {
     this.shownGross.emit(this.totalCost * this.VAT);

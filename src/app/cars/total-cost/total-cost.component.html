@@ -1,7 +1,11 @@
 <div class="row">
   <div class="col-sm-12">
     <div class="total-cost">
-      <p class="text-right">TOTAL COST: {{ totalCost }} PLN</p>
+      <p class="text-right">
+        <span *ngIf="isCostToLow" class="cost-warning">
+          WARNING! COST IS LOWER THAN {{ costTreshold }}!
+        </span>
+        TOTAL COST: {{ totalCost }} PLN</p>
     </div>
   </div>
 </div>

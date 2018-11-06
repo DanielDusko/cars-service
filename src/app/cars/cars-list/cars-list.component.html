@@ -32,7 +32,7 @@
           </tr>
         </tbody>
       </table>
-      <div *ngIf="cars.length == 0" class="no-cars-info">
+      <div *ngIf="cars?.length == 0" class="no-cars-info">
         <p>Currently no cars in service</p>
       </div>
       <!--<ng-template #noCarsInfo *ngIf="cars && cars.length === 0">-->
