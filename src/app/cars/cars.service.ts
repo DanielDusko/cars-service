@@ -26,8 +26,8 @@ export class CarsService {
        // .pipe(map(res => res as Car));
   }
 
-  addCar(data): Observable<any> {
-    return this.http.post(this.apiUrl, data);
+  addCar(data): Observable<Car> {
+    return this.http.post<Car>(this.apiUrl, data);
       // .pipe(map(res => res as Car[]));
   }
 

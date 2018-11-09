@@ -56,7 +56,7 @@ export class CarsListComponent implements OnInit, AfterViewInit {
     // wszystko jest po utworzeniu już componentów
     // this.totalCostRef.showGross();
     this.carRows.changes.subscribe(() => {
-      if (this.carRows.first.car.clientSurname === 'Kowalski') {
+      if (this.carRows.last.car.clientSurname === 'Kowalski') {
         console.warn('Client Kowalski is next in queue, better go to holidays');
       }
     })
