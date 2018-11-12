@@ -3,10 +3,12 @@ import {Car} from '../models/car';
 import {TotalCostComponent} from '../total-cost/total-cost.component';
 import {CarsService} from '../cars.service';
 import {Router} from '@angular/router';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {el} from '@angular/platform-browser/testing/src/browser_util';
 import {CostSharedService} from '../cost-shared.service';
 import {CarTableRowComponent} from '../car-table-row/car-table-row.component';
+import {csValidators} from '../../shared-module/validators/cs-validators';
+import {CanComponentDeactivate} from '../../guards/form-can-deactivate.guard';
 
 @Component({
   selector: 'cars-list',
@@ -14,7 +16,7 @@ import {CarTableRowComponent} from '../car-table-row/car-table-row.component';
   styleUrls: ['./cars-list.component.less'],
   encapsulation: ViewEncapsulation.None
 })
-export class CarsListComponent implements OnInit, AfterViewInit {
+export class CarsListComponent implements OnInit, AfterViewInit, CanComponentDeactivate {
   @ViewChild("totalCostRef") totalCostRef: TotalCostComponent;
   @ViewChildren(CarTableRowComponent) carRows: QueryList<CarTableRowComponent>;
   totalCost: number;
@@ -30,6 +32,12 @@ export class CarsListComponent implements OnInit, AfterViewInit {
               private costSharedService: CostSharedService,
               private router: Router) { }
 
+  canDeactivate() {
+    if(!this.carForm.dirty) {
+      return true;
+    }
+    return window.confirm('Discard changes?');
+  }
   ngOnInit() {
     this.loadCars();
     this.carForm = this.buildCarForm();
@@ -43,14 +51,48 @@ export class CarsListComponent implements OnInit, AfterViewInit {
       deliveryDate: '',
       deadline: '',
       color: '',
-      power: '',
+      power: ['', [csValidators.power]],
       clientFirstName: '',
       clientSurname: '',
-      cost: '',
       isFullyDamaged: '',
-      year: ''
+      year: '',
+      parts: this.formBuilder.array([])
     });
   }
+
+  buildParts(): FormGroup {
+    return this.formBuilder.group({
+      name: '',
+      inStock: true,
+      price: ''
+    });
+  }
+
+  get parts(): FormArray {
+    return <FormArray>this.carForm.get('parts');
+  }
+
+  addPart(): void {
+    this.parts.push(this.buildParts());
+  }
+
+  removePart(i: number): void {
+    this.parts.removeAt(i);
+  }
+
+  togglePlateValidity() {
+    const demageControl = this.carForm.get('isFullyDamaged'); //referencje do obu kontrolek
+    const plateControl = this.carForm.get('plate');
+
+    if (demageControl.value) {
+      plateControl.clearValidators();
+    } else {
+      plateControl.setValidators([Validators.required, Validators.minLength(3), Validators.maxLength(7)]);
+    }
+    //przekalkulowanie stan walidacji
+    plateControl.updateValueAndValidity();
+  }
+
   //dostęp do zagnieżdżonych komponentów
   ngAfterViewInit() {
     // wszystko jest po utworzeniu już componentów
@@ -69,9 +111,19 @@ export class CarsListComponent implements OnInit, AfterViewInit {
   }
 
   addCar() {
-    this.carsService.addCar(this.carForm.value).subscribe(() => {
+    // const carFormData = Object.assign({}, this.carForm.value);
+    // carFormData.parts = [carFormData.parts];
+    let carFormData = Object.assign({}, this.carForm.value);
+    carFormData.cost = this.getPartsCost(carFormData.parts);
+    this.carsService.addCar(carFormData).subscribe(() => {
       this.loadCars();
     });
+  }
+
+  getPartsCost(parts) {
+    return parts.reduce((prev, nextPart) => {
+      return parseFloat(prev) + parseFloat(nextPart.price);
+    }, 0)
   }
 
   loadCars(): void {

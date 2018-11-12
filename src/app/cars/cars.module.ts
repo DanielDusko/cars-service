@@ -6,21 +6,24 @@ import {SharedModule} from '../shared-module/shared-module';
 import { CarDetailsComponent } from './car-details/car-details.component';
 import {RouterModule} from '@angular/router';
 import {CarResolveService} from './car-resolve.service';
-import { EmptyComponent } from './empty/empty.component';
 import {ReactiveFormsModule} from '@angular/forms';
 import { IncomeTaxComponent } from './total-cost/income-tax/income-tax.component';
 import {CostSharedService} from './cost-shared.service';
 import { CarTableRowComponent } from './car-table-row/car-table-row.component';
+import {CarsRoutingModule} from './cars-routing.module';
+import { CarsComponent } from './cars.component';
 
 @NgModule({
   imports: [
     CommonModule,
     SharedModule,
     RouterModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    CarsRoutingModule
   ],
   exports: [CarsListComponent],
   providers: [CarResolveService, CostSharedService],
-  declarations: [CarsListComponent, TotalCostComponent, CarDetailsComponent, EmptyComponent, IncomeTaxComponent, CarTableRowComponent]
+  declarations: [CarsListComponent, TotalCostComponent, CarDetailsComponent,
+    IncomeTaxComponent, CarTableRowComponent, CarsComponent]
 })
 export class CarsModule { }

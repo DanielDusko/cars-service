@@ -1,21 +1,23 @@
 import {NgModule} from '@angular/core';
 import {Route, RouterModule} from '@angular/router';
-import {CarsListComponent} from './cars/cars-list/cars-list.component';
-import {AppComponent} from './app.component';
 import {EmptyComponent} from './cars/empty/empty.component';
+import {CarsModule} from './cars';
+import {AuthCanLoadGuard} from './guards/auth-can-load.guard';
+import {AuthGuard} from './guards/auth.guard';
+import {PageNotFoundComponent} from './shared-module/page-not-found/page-not-found.component';
 
 const APP_ROUTES: Route[] = [
-  {path: '', pathMatch: 'full', redirectTo: 'cars'},
-  {path: 'cars', component: CarsListComponent},
-  {path: 'motorbikes', component: EmptyComponent},
-  {path: 'bikes', component: EmptyComponent},
-  {path: 'quads', component: EmptyComponent}
-
-]
+  {path: '', pathMatch: 'full', redirectTo: 'login'},
+  {path: 'cars', canLoad: [AuthCanLoadGuard], loadChildren: () => CarsModule},
+  {path: 'motorbikes', component: EmptyComponent, canActivate: [AuthGuard]},
+  {path: 'bikes', component: EmptyComponent, canActivate: [AuthGuard]},
+  {path: 'quads', component: EmptyComponent, canActivate: [AuthGuard]},
+  {path: '**', component: PageNotFoundComponent}
+];
 // pathMatch mówi jak musi zgadzać się nasza ścieżka w pełni
 // full oznacza że musi sie zgadzać z path
 @NgModule({
-  imports: [RouterModule.forRoot(APP_ROUTES, {useHash: true})],
+  imports: [RouterModule.forRoot(APP_ROUTES, {enableTracing: true})],
   exports: [RouterModule]
 })
 

@@ -2,14 +2,15 @@ import { Component, OnInit } from '@angular/core';
 import {CarsService} from '../cars.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Car} from '../models/car';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {CanComponentDeactivate} from '../../guards/form-can-deactivate.guard';
 
 @Component({
   selector: 'cs-car-details',
   templateUrl: './car-details.component.html',
   styleUrls: ['./car-details.component.less']
 })
-export class CarDetailsComponent implements OnInit {
+export class CarDetailsComponent implements OnInit, CanComponentDeactivate {
   car: Car;
 
   carForm: FormGroup;
@@ -24,7 +25,17 @@ export class CarDetailsComponent implements OnInit {
     this.carForm = this.buildCarForm();
   }
 
+  canDeactivate() {
+    if(!this.carForm.dirty) {
+      return true;
+    }
+    return window.confirm('Discard changes?');
+  }
+
   buildCarForm() {
+    let parts = this.car.parts.map((part) => {
+      return this.formBuilder.group(part);
+    });
     return this.formBuilder.group({
       model: [this.car.model, Validators.required],
       type: this.car.type,
@@ -35,10 +46,30 @@ export class CarDetailsComponent implements OnInit {
       power: this.car.power,
       clientFirstName: this.car.clientFirstName,
       clientSurname: this.car.clientSurname,
-      cost: this.car.cost,
       isFullyDamaged: this.car.isFullyDamaged,
-      year: this.car.year
+      year: this.car.year,
+      parts: this.formBuilder.array(parts)
     });
+  }
+
+  buildParts(): FormGroup {
+    return this.formBuilder.group({
+      name: '',
+      inStock: true,
+      price: ''
+    });
+  }
+
+  get parts(): FormArray {
+    return <FormArray>this.carForm.get('parts');
+  }
+
+  addPart(): void {
+    this.parts.push(this.buildParts());
+  }
+
+  removePart(i: number): void {
+    this.parts.removeAt(i);
   }
 
   // + plus przerabia na liczbę
@@ -52,9 +83,18 @@ export class CarDetailsComponent implements OnInit {
   }
 
   updateCar() {
-    this.carsService.updateCar(this.car.id, this.carForm.value).subscribe(() => {
+    let carFormData = Object.assign({}, this.carForm.value);
+    carFormData.cost = this.getPartsCost(carFormData.parts);
+
+    this.carsService.updateCar(this.car.id, carFormData).subscribe(() => {
       this.router.navigate(['/cars']);
     });
+  }
+
+  getPartsCost(parts) {
+    return parts.reduce((prev, nextPart) => {
+      return parseFloat(prev) + parseFloat(nextPart.price);
+    }, 0)
   }
 
 }
