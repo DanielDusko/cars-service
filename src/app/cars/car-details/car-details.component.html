@@ -1,9 +1,16 @@
 <cs-header>
   <p levels>cars / {{ car?.model }}</p>
   <div content>
-    <p>Car details</p>
+    <p>Car details <span *ngIf="elapsedDays">| {{ elapsedDays }} days in service</span></p>
   </div>
 </cs-header>
+  <div class="row pl-3">
+    <div class="col-12">
+      <button (click)="clearDateInfoContainer()" class="btn btn-default float-left">Hide date info</button>
+      <button (click)="createDateInfo()" class="btn btn-primary">Show date info</button>
+    </div>
+  </div>
+<ng-template #dateInfoContainer></ng-template>
 
 <p class="data-header">Edit {{ car.model }}</p>
 
@@ -101,7 +108,7 @@
 
     <div class="row">
       <div class="col-sm-12">
-        <button type="submit" [disabled]="carForm.invalid" (click)="updateCar()" class="btn btn-primary float-right">Update car</button>
+        <button type="submit" [ngClass]="{disabled: carForm.invalid && !carForm.dirty && !removeOrAddPart}" (click)="updateCar()" class="btn btn-primary float-right">Update car</button>
         <button type="submit" (click)="carForm.reset()" class="btn btn-default float-right">Reset</button>
       </div>
     </div>

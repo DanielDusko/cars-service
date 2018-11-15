@@ -4,4 +4,4 @@
 <td [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.deadline | date:'shortDate' }}</td>
 <td [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.clientFirstName }} {{ car?.clientSurname | surnameShortcut }}</td>
 <td csImportant [ngClass]="{'row-error-top-bottom': car?.isFullyDamaged}">{{ car?.cost | currency:'PLN':true }}</td>
-<td (click)="removeCar(car, $event)" [ngClass]="{'row-error-right': car?.isFullyDamaged}">( X )</td>
+<td (click)="removeCar(car, $event)" [ngClass]="{'row-error-right': car?.isFullyDamaged}" class="remove-btn">( X )</td>

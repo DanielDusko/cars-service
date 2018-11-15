@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { SidebarComponent } from './sidebar/sidebar.component';
 import {RouterModule} from '@angular/router';
 import {EmptyComponent} from '../cars/empty/empty.component';
+import {SharedModule} from '../shared-module/shared-module';
 
 @NgModule({
   imports: [
     CommonModule,
-    RouterModule
+    RouterModule,
+    SharedModule
   ],
   exports: [SidebarComponent],
   declarations: [SidebarComponent, EmptyComponent]

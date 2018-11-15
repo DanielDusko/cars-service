@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 
-import {CarsModule, CarsService} from './cars';
+import {CarsService} from './cars';
 
 import { AppComponent } from './app.component';
 import {HttpClientModule} from '@angular/common/http';

@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, ComponentFactoryResolver, ComponentRef, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
 import {CarsService} from '../cars.service';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Car} from '../models/car';
 import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {CanComponentDeactivate} from '../../guards/form-can-deactivate.guard';
+import {DateInfoComponent} from './date-info/date-info.component';
 
 @Component({
   selector: 'cs-car-details',
@@ -11,13 +12,18 @@ import {CanComponentDeactivate} from '../../guards/form-can-deactivate.guard';
   styleUrls: ['./car-details.component.less']
 })
 export class CarDetailsComponent implements OnInit, CanComponentDeactivate {
+  @ViewChild('dateInfoContainer', {read: ViewContainerRef}) dateInfoContainer: ViewContainerRef;
   car: Car;
-
   carForm: FormGroup;
+  removeOrAddPart: boolean = false;
+  saveForm: boolean = false;
+  elapsedDays: number;
+  dateInfoRef;
 
   constructor(private carsService: CarsService,
               private formBuilder: FormBuilder,
               private router: Router,
+              private componentFactoryResolver: ComponentFactoryResolver, //magaxyn dynamicznych komponentów
               private route: ActivatedRoute) { }
 
   ngOnInit() {
@@ -25,8 +31,36 @@ export class CarDetailsComponent implements OnInit, CanComponentDeactivate {
     this.carForm = this.buildCarForm();
   }
 
+  createDateInfo() {
+    // const dateInfoFactory = this.componentFactoryResolver.resolveComponentFactory(<Type<DateInfoComponent>>DateInfoComponent);
+    if (this.dateInfoContainer.get(0) !== null) {
+      return;
+    }
+    const dateInfoFactory = this.componentFactoryResolver.resolveComponentFactory(DateInfoComponent);
+
+    this.dateInfoRef = <ComponentRef<DateInfoComponent>>this.dateInfoContainer.createComponent(dateInfoFactory);
+    this.dateInfoRef.instance.car = this.car;
+    this.dateInfoRef.instance.checkElapsedDays.subscribe((value) => {
+      this.elapsedDays = value;
+    });
+  }
+
+  clearDateInfoContainer() {
+    // !!!!!1 SPOSÓB
+    // this.dateInfoContainer.clear();
+    // !!!!!!2 SPOSÓB
+    // this.dateInfoContainer.remove(0);
+    // !!!!!!3 SPOSÓB
+    this.dateInfoRef.destroy(0);
+
+
+  }
+
   canDeactivate() {
-    if(!this.carForm.dirty) {
+    if (this.saveForm) {
+      return true;
+    }
+    if(!this.carForm.dirty && !this.removeOrAddPart) {
       return true;
     }
     return window.confirm('Discard changes?');
@@ -66,10 +100,12 @@ export class CarDetailsComponent implements OnInit, CanComponentDeactivate {
 
   addPart(): void {
     this.parts.push(this.buildParts());
+    this.removeOrAddPart = true;
   }
 
   removePart(i: number): void {
     this.parts.removeAt(i);
+    this.removeOrAddPart = true;
   }
 
   // + plus przerabia na liczbę
@@ -83,6 +119,7 @@ export class CarDetailsComponent implements OnInit, CanComponentDeactivate {
   }
 
   updateCar() {
+    this.saveForm = true;
     let carFormData = Object.assign({}, this.carForm.value);
     carFormData.cost = this.getPartsCost(carFormData.parts);
 
